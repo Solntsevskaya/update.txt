@@ -1,36 +1,32 @@
-#NoEnv
-#Warn
-SendMode Input
-SetWorkingDir %A_ScriptDir%
+#Persistent
+SetTimer, CheckUpdate, 60000
 
-CheckForUpdate() {
-    URL := "https://github.com/Solntsevskaya/update.txt/raw/713d14a5409b5d6e1facebb2f7b556b0e6fd3b64/update.txt"
-    CurrentVersion := "1.0.1"  ; Замените на текущую версию вашего скрипта
+CheckUpdate() {
+ URLDownloadToFile, https://raw.githubusercontent.com/Solntsevskaya/update.txt/fe33ddea44df66a7380c10e4c363d83d2ce1dba4/update.txt, update.txt
+ FileReadLine, update, update.txt, 1
+ FileReadLine, reason, update.txt, 3
 
-    try {
-        http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-        http.Open("GET", URL, false)
-        http.Send()
-        LatestVersion := http.ResponseText
-
-        if (LatestVersion > CurrentVersion) {
-            MsgBox, Доступно обновление!`nТекущая версия: %CurrentVersion%`nПоследняя версия: %LatestVersion%`nХотите обновить?
-
-            if (MsgBox = 1) {
-                Run, https://github.com/Solntsevskaya/update.txt/raw/713d14a5409b5d6e1facebb2f7b556b0e6fd3b64/update.txt
-                ExitApp
-            }
-        }
-    }
-    catch e {
-        MsgBox, Ошибка при проверке обновлений: %e%
-    }
+ if (update != "; Last updated 21-03-2025") {
+ MsgBox, Доступно обновление!``Причина: %reason%````Нажмите F6 для обновления или F4 для продолжения работы.
+ return
+ } else {
+ FileDelete, update.txt
+ return
+ }
 }
 
-; Основная часть скрипта
-CheckForUpdate()
+F6::
+ FileCopy, update.txt, %A_ScriptFullPath%, 1
+ FileDelete, update.txt
+ MsgBox, Скрипт будет закрыт. Перезапустите его для применения обновлений!
+ ExitApp
+return
 
-#NoTrayIcon
+F4::
+ FileDelete, update.txt
+return
+
+; Создаем GUI
 Gui, Add, Button, x22 y9 w210 h40 gOrg1 , Prov Drive
 Gui, Add, Button, x22 y59 w210 h40 gOrg2 , ProffDrive
 Gui, Add, Button, x22 y109 w210 h40 gOrg3 , Cool GO
