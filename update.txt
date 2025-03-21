@@ -1,44 +1,56 @@
-#NoTrayIcon
+#NoEnv
+SendMode Input
+SetWorkingDir %A_ScriptDir%
 
-; Функция проверки обновлений
-CheckForUpdate() {
-    global
+; Настройки
+fileUrl := "https://drive.google.com/uc?id=FILE_ID&export=download" ; замените FILE_ID на реальный ID твоего файла
+versionFilePath := A_ScriptDir "\current_version.txt" ; путь к файлу с версией
 
-    ; URL файла с версией (ваш GitHub файл)
-    LatestVersionURL = https://raw.githubusercontent.com/Solntsevskaya/update.txt/main/update.txt
+; Функция для получения текущего содержимого файла
+GetCurrentVersion() {
+    If FileExist(versionFilePath) {
+        FileRead, currentVersion, % versionFilePath
+        return currentVersion
+    }
+    return ""
+}
 
-    ; Получаем текущую версию скрипта
-    CurrentVersion := "1.1" ; Замените на текущую версию вашего скрипта
+; Функция для сохранения новой версии
+SaveNewVersion(newVersion) {
+    FileDelete, % versionFilePath
+    FileAppend, % newVersion, % versionFilePath
+}
 
-    ; Получаем последнюю версию с GitHub
-    LatestVersion := ""
-    URLDownloadToVar(LatestVersionURL, LatestVersion)
-
-    ; Сравниваем версии
-    if (LatestVersion > CurrentVersion) {
-        MsgBox, Доступно обновление до версии %LatestVersion%!`nХотите обновить сейчас?
-        IfMsgBox Yes
-            Run, https://github.com/Solntsevskaya/update.txt/releases/latest ; Замените на URL с вашим обновлённым скриптом
+; Основная функция для проверки обновлений
+CheckForUpdates() {
+    global fileUrl, versionFilePath
+    
+    ; Получаем текущую версию
+    currentVersion := GetCurrentVersion()
+    
+    ; Загружаем файл с сервера
+    whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    whr.Open("GET", fileUrl)
+    whr.Send()
+    
+    ; Читаем содержимое загруженного файла
+    responseText := whr.ResponseText
+    
+    ; Предположим, что первая строка файла содержит версию
+    newVersion := SubStr(responseText, 1, InStr(responseText, "`n") - 1)
+    
+    if (newVersion != currentVersion) {
+        MsgBox, Обнаружена новая версия!`nТекущая версия: %currentVersion%`nНовая версия: %newVersion%
+        
+        ; Сохраняем новую версию
+        SaveNewVersion(newVersion)
+    } else {
+        MsgBox, Обновления отсутствуют.`nТекущая версия: %currentVersion%
     }
 }
 
-; Функция для загрузки текста по URL
-URLDownloadToVar(URL, ByRef Output) {
-    try {
-        Http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-        Http.Open("GET", URL, false)
-        Http.Send()
-        Output := Http.ResponseText
-        return true
-    }
-    catch {
-        return false
-    }
-}
-
-; Основная часть скрипта
-CheckForUpdate() ; Запускаем проверку при запуске
-
+; Запускаем проверку обновлений
+CheckForUpdates()
 Gui, Add, Button, x22 y9 w210 h40 gOrg1 , Prov Drive
 Gui, Add, Button, x22 y59 w210 h40 gOrg2 , ProffDrive
 Gui, Add, Button, x22 y109 w210 h40 gOrg3 , Cool GO
