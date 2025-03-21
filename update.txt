@@ -1,32 +1,44 @@
-#Persistent
-SetTimer, CheckUpdate, 60000
+#NoTrayIcon
 
-CheckUpdate() {
- URLDownloadToFile, https://raw.githubusercontent.com/Solntsevskaya/update.txt/fe33ddea44df66a7380c10e4c363d83d2ce1dba4/update.txt, update.txt
- FileReadLine, update, update.txt, 1
- FileReadLine, reason, update.txt, 3
-
- if (update != "; Last updated 22-03-2025") {
- MsgBox, Доступно обновление!``Причина: %reason%````Нажмите F6 для обновления или F4 для продолжения работы.
- return
- } else {
- FileDelete, update.txt
- return
- }
+; Функция проверки обновлений
+CheckForUpdate() {
+    global
+    
+    ; URL файла с версией (ваш GitHub файл)
+    LatestVersionURL = https://raw.githubusercontent.com/Solntsevskaya/update.txt/29ce336a5afa9951a57436477f795982f5180877/update.txt
+    
+    ; Получаем текущую версию скрипта
+    CurrentVersion := "1.0" ; Замените на текущую версию вашего скрипта
+    
+    ; Получаем последнюю версию с GitHub
+    LatestVersion := ""
+    URLDownloadToVar(LatestVersionURL, LatestVersion)
+    
+    ; Сравниваем версии
+    if (LatestVersion > CurrentVersion) {
+        MsgBox, Доступно обновление до версии %LatestVersion%!`nХотите обновить сейчас?
+        IfMsgBox Yes
+            Run, https://github.com/Solntsevskaya/update.txt/releases/latest ; Замените на URL с вашим обновлённым скриптом
+    }
 }
 
-F6::
- FileCopy, update.txt, %A_ScriptFullPath%, 1
- FileDelete, update.txt
- MsgBox, Скрипт будет закрыт. Перезапустите его для применения обновлений!
- ExitApp
-return
+; Функция для загрузки текста по URL
+URLDownloadToVar(URL, ByRef Output) {
+    try {
+        Http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+        Http.Open("GET", URL, false)
+        Http.Send()
+        Output := Http.ResponseText
+        return true
+    }
+    catch {
+        return false
+    }
+}
 
-F4::
- FileDelete, update.txt
-return
+; Основная часть скрипта
+CheckForUpdate() ; Запускаем проверку при запуске
 
-; Создаем GUI
 Gui, Add, Button, x22 y9 w210 h40 gOrg1 , Prov Drive
 Gui, Add, Button, x22 y59 w210 h40 gOrg2 , ProffDrive
 Gui, Add, Button, x22 y109 w210 h40 gOrg3 , Cool GO
@@ -51,6 +63,7 @@ Gui Font, s9, Segoe UI
 ; Generated using SmartGUI Creator for SciTE
 Gui, Show, w740 h413, Реклама ЧО
 return
+
 
 GuiClose:
 ExitApp
