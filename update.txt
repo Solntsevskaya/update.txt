@@ -1,14 +1,4 @@
-; 21-03-2025
-
-; Обновление включает:
-; - Исправление ошибок
-; - Новые функции
-
-; Добавьте в начало вашего скрипта информацию об обновлении
-; Last updated 21-03-2025
-/*
-Это причина обновления
-*/
+CurrentVersion := "1.0.0"
 
 SetTimer, CheckForUpdate, 60000 ; Проверять раз в минуту
 
@@ -17,22 +7,28 @@ URLDownloadToFile, https://raw.githubusercontent.com/Solntsevskaya/update.txt/ma
 if ErrorLevel
     return
 
-FileReadLine, update, update.txt, 1
-FileReadLine, current, A_ScriptFullPath, 1
+FileRead, updateText, update.txt
+FileReadLine, latestVersion, update.txt, 1
 
-if (update = current)
+if (latestVersion > CurrentVersion)
+{
+    FileReadLine, updateInfo, update.txt, 3
+    MsgBox, Доступно обновление скрипта!`nТекущая версия: %CurrentVersion%`nНовая версия: %latestVersion%`n`nПричина: %updateInfo%`n`nНажать F6 для обновления или F4 для продолжения работы.
+}
+else
 {
     FileDelete, update.txt
     return
 }
-
-FileReadLine, reason, update.txt, 3
-MsgBox, Доступно обновление скрипта!`nПричина: %reason%`n`nНажать F6 для обновления или F4 для продолжения работы.
 return
 
 F6::
-FileCopy, update.txt, %A_ScriptFullPath%, 1
-FileDelete, update.txt
+URLDownloadToFile, https://raw.githubusercontent.com/ваш_аккаунт/репозиторий/main/ваш_скрипт.ahk, %A_ScriptFullPath%
+if ErrorLevel
+{
+    MsgBox, Ошибка при обновлении.
+    return
+}
 MsgBox, Обновление успешно установлено. Перезапустите скрипт.
 ExitApp
 return
