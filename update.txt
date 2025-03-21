@@ -1,33 +1,51 @@
-; Last updated 2025-03-19
-/*
-Это место для описания обновлений
-*/
-Update:
-URLDownloadToFile, https://drive.google.com/file/d/1w0iyaLhTND82XDBQnr27a7nS6UcMLJJb/view?usp=drive_link, update.txt
-FileReadLine, update, update.txt, 1  ; Читаем первую строку с датой
+; Настройки
+UpdateURL := "https://raw.githubusercontent.com/Solntsevskaya/update.txt/main/update.txt"
+ScriptPath := "C:\Users\Максим\Desktop\Реклама\Reklama.ahk"
+TempUpdateFile := A_Temp . "\update.txt"
 
-if (update = "; Last updated 2025-03-19") {
-    FileDelete, update.txt
-    GoTo NoUpdate
-} else {
-    FileReadLine, reason, update.txt, 3  ; Читаем описание обновлений
-    msgbox, Доступно обновление скрипта!`nНажмите F6 для обновления или F4 для продолжения работы.`n`nПричина обновления: %reason%
-
-    F6::
-        FileCopy, update.txt, ваш_скрипт.ahk, 1
-        FileDelete, update.txt
-        msgbox, Скрипт будет закрыт. Перезапустите его для применения обновлений!
+; Функция проверки обновлений
+CheckUpdate() {
+    global UpdateURL, ScriptPath, TempUpdateFile
+    
+    ; Загружаем файл с информацией об обновлении
+    URLDownloadToFile, %UpdateURL%, %TempUpdateFile%
+    
+    ; Читаем текущую версию скрипта
+    FileReadLine, CurrentVersion, %ScriptPath%, 1
+    
+    ; Читаем версию с сервера
+    FileReadLine, ServerVersion, %TempUpdateFile%, 1
+    
+    ; Сравниваем версии
+    if (CurrentVersion != ServerVersion) {
+        FileReadLine, UpdateInfo, %TempUpdateFile%, 3
+        MsgBox, Доступно обновление!`nПричина: %UpdateInfo%`n`nНажмите F6 для обновления или F4 для отмены.
+        
+        F6::
+        FileCopy, %TempUpdateFile%, %ScriptPath%, 1
+        FileDelete, %TempUpdateFile%
+        MsgBox, Скрипт обновлен. Перезапустите его.
         ExitApp
-    return
-
-    F4::
-        msgbox, Обновление отменено!
-        FileDelete, update.txt
-        GoTo NoUpdate
-    return
+        return
+        
+        F4::
+        FileDelete, %TempUpdateFile%
+        return
+    } else {
+        FileDelete, %TempUpdateFile%
+        return
+    }
 }
 
-NoUpdate:
+; Основная часть скрипта
+#Persistent
+SetTimer, CheckUpdate, 60000 ; Проверять обновления каждые 60 секунд
+Return
+
+; Пример структуры файла update.txt:
+; ; Last updated 2025-03-21
+; 1.0.3
+; Улучшения производительности и исправления ошибок
 
 #NoTrayIcon
 Gui, Add, Button, x22 y9 w210 h40 gOrg1 , Prov Drive
