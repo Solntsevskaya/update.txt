@@ -1,5 +1,5 @@
 ; Текущая версия скрипта
-CurrentVersion := "1.0.0"
+CurrentVersion := "1.0.1"
 
 SetTimer, CheckForUpdate, 60000 ; Проверять раз в минуту
 
