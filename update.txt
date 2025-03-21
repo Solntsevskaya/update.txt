@@ -6,7 +6,7 @@ CheckUpdate() {
  FileReadLine, update, update.txt, 1
  FileReadLine, reason, update.txt, 3
 
- if (update != "; Last updated 21-03-2025") {
+ if (update != "; Last updated 22-03-2025") {
  MsgBox, Доступно обновление!``Причина: %reason%````Нажмите F6 для обновления или F4 для продолжения работы.
  return
  } else {
