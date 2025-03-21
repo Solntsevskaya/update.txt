@@ -1,7 +1,37 @@
-21-03-2025
+; Добавьте в начало вашего скрипта информацию об обновлении
+; Last updated 21-03-2025
+/*
+Это причина обновления
+*/
 
-Обновление включает:
-- Исправлена ошибка с некорректным отображением уведомлений
-- Добавлена функция автоматического сохранения настроек
-- Улучшена обработка ошибок при подключении к сети
-- Оптимизирован код для более быстрой работы
+SetTimer, CheckForUpdate, 60000 ; Проверять раз в минуту
+
+CheckForUpdate:
+URLDownloadToFile, https://raw.githubusercontent.com/Solntsevskaya/update.txt/main/update.txt, update.txt
+if ErrorLevel
+    return
+
+FileReadLine, update, update.txt, 1
+FileReadLine, current, A_ScriptFullPath, 1
+
+if (update = current)
+{
+    FileDelete, update.txt
+    return
+}
+
+FileReadLine, reason, update.txt, 3
+MsgBox, Доступно обновление скрипта!`nПричина: %reason%`n`nНажать F6 для обновления или F4 для продолжения работы.
+return
+
+F6::
+FileCopy, update.txt, %A_ScriptFullPath%, 1
+FileDelete, update.txt
+MsgBox, Обновление успешно установлено. Перезапустите скрипт.
+ExitApp
+return
+
+F4::
+FileDelete, update.txt
+MsgBox, Работаете со старой версией скрипта.
+return
