@@ -1,43 +1,43 @@
-#NoTrayIcon
+; Текущая версия скрипта
+CurrentVersion := "1.0.0"
 
-; Функция проверки обновлений
-CheckForUpdate() {
-    global
+SetTimer, CheckForUpdate, 60000 ; Проверять раз в минуту
 
-    ; URL файла с версией (ваш GitHub файл)
-    LatestVersionURL = https://raw.githubusercontent.com/Solntsevskaya/update.txt/29ce336a5afa9951a57436477f795982f5180877/update.txt
+CheckForUpdate:
+URLDownloadToFile, https://raw.githubusercontent.com/Solntsevskaya/update.txt/main/update.txt, update.txt
+if ErrorLevel
+    return
 
-    ; Получаем текущую версию скрипта
-    CurrentVersion := "1.0" ; Замените на текущую версию вашего скрипта
+FileRead, updateText, update.txt
+FileReadLine, latestVersion, update.txt, 1
 
-    ; Получаем последнюю версию с GitHub
-    LatestVersion := ""
-    URLDownloadToVar(LatestVersionURL, LatestVersion)
-
-    ; Сравниваем версии
-    if (LatestVersion > CurrentVersion) {
-        MsgBox, Доступно обновление до версии %LatestVersion%!`nХотите обновить сейчас?
-        IfMsgBox Yes
-            Run, https://github.com/Solntsevskaya/update.txt/releases/latest ; Замените на URL с вашим обновлённым скриптом
-    }
+if (latestVersion > CurrentVersion)
+{
+    FileReadLine, updateInfo, update.txt, 3
+    MsgBox, Доступно обновление скрипта!`nТекущая версия: %CurrentVersion%`nНовая версия: %latestVersion%`n`nПричина: %updateInfo%`n`nНажать F6 для обновления или F4 для продолжения работы.
 }
-
-; Функция для загрузки текста по URL
-URLDownloadToVar(URL, ByRef Output) {
-    try {
-        Http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-        Http.Open("GET", URL, false)
-        Http.Send()
-        Output := Http.ResponseText
-        return true
-    }
-    catch {
-        return false
-    }
+else
+{
+    FileDelete, update.txt
+    return
 }
+return
 
-; Основная часть скрипта
-CheckForUpdate() ; Запускаем проверку при запуске
+F6::
+URLDownloadToFile, https://raw.githubusercontent.com/ваш_аккаунт/репозиторий/main/ваш_скрипт.ahk, %A_ScriptFullPath%
+if ErrorLevel
+{
+    MsgBox, Ошибка при обновлении.
+    return
+}
+MsgBox, Обновление успешно установлено. Перезапустите скрипт.
+ExitApp
+return
+
+F4::
+FileDelete, update.txt
+MsgBox, Работаете со старой версией скрипта.
+return
 
 Gui, Add, Button, x22 y9 w210 h40 gOrg1 , Prov Drive
 Gui, Add, Button, x22 y59 w210 h40 gOrg2 , ProffDrive
