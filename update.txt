@@ -1,51 +1,34 @@
-; Настройки
-UpdateURL := "https://raw.githubusercontent.com/Solntsevskaya/update.txt/main/update.txt"
-ScriptPath := "C:\Users\Максим\Desktop\Реклама\Reklama.ahk"
-TempUpdateFile := A_Temp . "\update.txt"
+#NoEnv
+#Warn
+SendMode Input
+SetWorkingDir %A_ScriptDir%
 
-; Функция проверки обновлений
-CheckUpdate() {
-    global UpdateURL, ScriptPath, TempUpdateFile
-    
-    ; Загружаем файл с информацией об обновлении
-    URLDownloadToFile, %UpdateURL%, %TempUpdateFile%
-    
-    ; Читаем текущую версию скрипта
-    FileReadLine, CurrentVersion, %ScriptPath%, 1
-    
-    ; Читаем версию с сервера
-    FileReadLine, ServerVersion, %TempUpdateFile%, 1
-    
-    ; Сравниваем версии
-    if (CurrentVersion != ServerVersion) {
-        FileReadLine, UpdateInfo, %TempUpdateFile%, 3
-        MsgBox, Доступно обновление!`nПричина: %UpdateInfo%`n`nНажмите F6 для обновления или F4 для отмены.
-        
-        F6::
-        FileCopy, %TempUpdateFile%, %ScriptPath%, 1
-        FileDelete, %TempUpdateFile%
-        MsgBox, Скрипт обновлен. Перезапустите его.
-        ExitApp
-        return
-        
-        F4::
-        FileDelete, %TempUpdateFile%
-        return
-    } else {
-        FileDelete, %TempUpdateFile%
-        return
+CheckForUpdate() {
+    URL := "https://github.com/Solntsevskaya/update.txt/raw/713d14a5409b5d6e1facebb2f7b556b0e6fd3b64/update.txt"
+    CurrentVersion := "1.0.1"  ; Замените на текущую версию вашего скрипта
+
+    try {
+        http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+        http.Open("GET", URL, false)
+        http.Send()
+        LatestVersion := http.ResponseText
+
+        if (LatestVersion > CurrentVersion) {
+            MsgBox, Доступно обновление!`nТекущая версия: %CurrentVersion%`nПоследняя версия: %LatestVersion%`nХотите обновить?
+
+            if (MsgBox = 1) {
+                Run, https://github.com/Solntsevskaya/update.txt/raw/713d14a5409b5d6e1facebb2f7b556b0e6fd3b64/update.txt
+                ExitApp
+            }
+        }
+    }
+    catch e {
+        MsgBox, Ошибка при проверке обновлений: %e%
     }
 }
 
 ; Основная часть скрипта
-#Persistent
-SetTimer, CheckUpdate, 60000 ; Проверять обновления каждые 60 секунд
-Return
-
-; Пример структуры файла update.txt:
-; ; Last updated 2025-03-21
-; 1.0.4
-; Улучшения производительности и исправления ошибок
+CheckForUpdate()
 
 #NoTrayIcon
 Gui, Add, Button, x22 y9 w210 h40 gOrg1 , Prov Drive
