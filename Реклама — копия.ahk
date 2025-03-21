@@ -24,7 +24,7 @@ else
 return
 
 F6::
-URLDownloadToFile, https://raw.githubusercontent.com/ваш_аккаунт/репозиторий/main/ваш_скрипт.ahk, %A_ScriptFullPath%
+URLDownloadToFile, https://raw.githubusercontent.com/Solntsevskaya/update.txt/main/Реклама%20—%20копия.ahk, %A_ScriptFullPath%
 if ErrorLevel
 {
     MsgBox, Ошибка при обновлении.
