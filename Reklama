@@ -1,5 +1,6 @@
+FileEncoding, UTF-8
 ; Текущая версия скрипта
-CurrentVersion := "1.0.3"
+CurrentVersion := "1.0.4"
 
 SetTimer, CheckForUpdate, 60000 ; Проверять раз в минуту
 
@@ -38,19 +39,7 @@ F4::
 FileDelete, update.txt
 MsgBox, Работаете со старой версией скрипта.
 return
-
-; Функция для сохранения файла с BOM
-SaveWithBOM(filePath, content) {
-    File := FileOpen(filePath, "w", "UTF-8")
-    File.Write( Chr(0xFEFF) ) ; Добавляем BOM
-    File.Write(content)
-    File.Close()
-}
-
-; Сохраняем файл с BOM
-FileRead, scriptContent, %A_ScriptFullPath%
-SaveWithBOM(A_ScriptFullPath, scriptContent)
-
+; ------------------------------------------------------------------------------------
 Fruit:
 Gui, Add, Button, x22 y9 w210 h40 gOrg1 , Prov Drive
 Gui, Add, Button, x22 y59 w210 h40 gOrg2 , ProffDrive
