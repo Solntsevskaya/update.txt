@@ -8,7 +8,7 @@ CheckForUpdate() {
     LatestVersionURL = https://raw.githubusercontent.com/Solntsevskaya/update.txt/29ce336a5afa9951a57436477f795982f5180877/update.txt
     
     ; Получаем текущую версию скрипта
-    CurrentVersion := "1.0" ; Замените на текущую версию вашего скрипта
+    CurrentVersion := "1.1" ; Замените на текущую версию вашего скрипта
     
     ; Получаем последнюю версию с GitHub
     LatestVersion := ""
