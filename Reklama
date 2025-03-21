@@ -1,5 +1,5 @@
 ; Текущая версия скрипта
-CurrentVersion := "1.0.1"
+CurrentVersion := "1.0.2"
 
 SetTimer, CheckForUpdate, 60000 ; Проверять раз в минуту
 
@@ -19,7 +19,7 @@ if (latestVersion > CurrentVersion)
 else
 {
     FileDelete, update.txt
-    return
+    Goto, Fruit
 }
 return
 
@@ -39,6 +39,7 @@ FileDelete, update.txt
 MsgBox, Работаете со старой версией скрипта.
 return
 
+Fruit:
 Gui, Add, Button, x22 y9 w210 h40 gOrg1 , Prov Drive
 Gui, Add, Button, x22 y59 w210 h40 gOrg2 , ProffDrive
 Gui, Add, Button, x22 y109 w210 h40 gOrg3 , Cool GO
