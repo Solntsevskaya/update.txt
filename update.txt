@@ -3,17 +3,17 @@
 ; Функция проверки обновлений
 CheckForUpdate() {
     global
-    
+
     ; URL файла с версией (ваш GitHub файл)
-    LatestVersionURL = https://raw.githubusercontent.com/Solntsevskaya/update.txt/29ce336a5afa9951a57436477f795982f5180877/update.txt
-    
+    LatestVersionURL = https://raw.githubusercontent.com/Solntsevskaya/update.txt/main/update.txt
+
     ; Получаем текущую версию скрипта
     CurrentVersion := "1.1" ; Замените на текущую версию вашего скрипта
-    
+
     ; Получаем последнюю версию с GitHub
     LatestVersion := ""
     URLDownloadToVar(LatestVersionURL, LatestVersion)
-    
+
     ; Сравниваем версии
     if (LatestVersion > CurrentVersion) {
         MsgBox, Доступно обновление до версии %LatestVersion%!`nХотите обновить сейчас?
